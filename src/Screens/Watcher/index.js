@@ -77,7 +77,7 @@ const WatcherTask = () => {
     if (!Watcher) {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       setWatcher(true);
-      timer.current = BackgroundTimer.setInterval(callBack, 1);
+      timer.current = BackgroundTimer.setInterval(callBack, 1000);
     }
   };
 
