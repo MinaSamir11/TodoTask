@@ -1,29 +1,20 @@
-import React, {useRef, useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   TextInput,
   View,
   Text,
-  Pressable,
   TouchableWithoutFeedback,
   Keyboard,
-  UIManager,
   LayoutAnimation,
 } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 import styles from './styles';
-
-// config animation collapse
-if (
-  Platform.OS === 'android' &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
+import {Button} from '../../Components';
 
 const WatcherTask = () => {
   const [Watcher, setWatcher] = useState(false);
-  const [TotalSeconds, setTotalSeconds] = useState(0);
+  const [TotalMiliSeconds, setTotalMiliSeconds] = useState(0);
   const [LastSpentTime, setLastSpentTime] = useState(0);
   const {getItem, setItem} = useAsyncStorage('last_time');
 
@@ -39,13 +30,14 @@ const WatcherTask = () => {
 
   useEffect(() => {
     readItemFromStorage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getTimeFormated = () => {
     let timeFormatted = '';
-    let hours = Math.floor(TotalSeconds / 3600) + '';
-    let minutes = parseInt((TotalSeconds / 60) % 60) + '';
-    let seconds = (TotalSeconds % 60) + '';
+    let hours = Math.floor(TotalMiliSeconds / 3600) + '';
+    let minutes = parseInt((TotalMiliSeconds / 60) % 60) + '';
+    let seconds = (TotalMiliSeconds % 60) + '';
 
     if (hours.length < 2) {
       timeFormatted = '0' + hours + ':';
@@ -67,26 +59,29 @@ const WatcherTask = () => {
     return timeFormatted;
   };
 
-  const onStart = () => {
+  //using call back to prevent rerender to Button
+  const onStart = useCallback(() => {
     if (!Watcher) {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       setWatcher(true);
 
       BackgroundTimer.runBackgroundTimer(() => {
-        setTotalSeconds((prevState) => prevState + 1);
+        setTotalMiliSeconds((prevState) => prevState + 1);
       }, 1000);
     }
-  };
+  }, [Watcher]);
 
-  const onStop = () => {
+  //using call back to prevent rerender to Button
+  const onStop = useCallback(() => {
     if (Watcher) {
       writeItemToStorage(getTimeFormated());
       LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       setWatcher(false);
-      setTotalSeconds(0);
+      setTotalMiliSeconds(0);
       BackgroundTimer.stopBackgroundTimer();
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [Watcher, writeItemToStorage]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -111,13 +106,19 @@ const WatcherTask = () => {
 
         <View style={styles.ContianerStartStopBtns}>
           <View style={styles.SubContainerBtns}>
-            <Pressable onPress={onStart} style={styles.StartBtn}>
-              <Text style={styles.StartBtnTxt}>Start</Text>
-            </Pressable>
+            <Button
+              onPress={onStart}
+              Title={'Start'}
+              style={styles.StartBtn}
+              styleTxt={styles.StartBtnTxt}
+            />
 
-            <Pressable onPress={onStop} style={styles.StopBtn}>
-              <Text style={styles.StopBtnTxt}>Stop</Text>
-            </Pressable>
+            <Button
+              onPress={onStop}
+              Title={'Stop'}
+              style={styles.StopBtn}
+              styleTxt={styles.StopBtnTxt}
+            />
           </View>
         </View>
       </View>
