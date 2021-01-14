@@ -1,21 +1,16 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
+import {SafeAreaView, StyleSheet} from 'react-native';
+import WatcherScreen from './src/Screens/Watcher';
 
-const TodoTask = () => {
+const App = () => {
   return (
-    <SafeAreaView>
-      <View>
-        <Text>Hello</Text>
-      </View>
+    <SafeAreaView style={styles.MainContainer}>
+      <WatcherScreen />
     </SafeAreaView>
   );
 };
 
-export default TodoTask;
+const styles = StyleSheet.create({
+  MainContainer: {flex: 1},
+});
+export default App;
