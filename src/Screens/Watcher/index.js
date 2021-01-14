@@ -1,21 +1,17 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
 import {
-  SafeAreaView,
   TextInput,
   View,
   Text,
   Pressable,
-  Dimensions,
   TouchableWithoutFeedback,
   Keyboard,
   UIManager,
   LayoutAnimation,
 } from 'react-native';
 import BackgroundTimer from '../../helper/BackgroundTimer';
-
 import {useAsyncStorage} from '@react-native-async-storage/async-storage';
-
-const {width} = Dimensions.get('screen');
+import styles from './styles';
 
 // config animation collapse
 if (
@@ -26,10 +22,10 @@ if (
 }
 
 const WatcherTask = () => {
-  const [Watcher, setWatcher] = useState(false);
   const timer = useRef();
-  const [TotalSeconds, setTotalSeconds] = useState(0);
 
+  const [Watcher, setWatcher] = useState(false);
+  const [TotalSeconds, setTotalSeconds] = useState(0);
   const [LastSpentTime, setLastSpentTime] = useState(0);
   const {getItem, setItem} = useAsyncStorage('last_time');
 
@@ -48,124 +44,82 @@ const WatcherTask = () => {
   }, []);
 
   const callBack = () => {
-    setTotalSeconds((prev) => prev + 1);
+    setTotalSeconds((prevState) => prevState + 1);
   };
 
   const getTimeFormated = () => {
-    let timeForamted = '';
+    let timeFormatted = '';
     let hours = Math.floor(TotalSeconds / 3600) + '';
     let minutes = parseInt((TotalSeconds / 60) % 60) + '';
     let seconds = (TotalSeconds % 60) + '';
 
     if (hours.length < 2) {
-      timeForamted = '0' + hours + ':';
+      timeFormatted = '0' + hours + ':';
     } else {
-      timeForamted = hours + ':';
+      timeFormatted = hours + ':';
     }
 
     if (minutes.length < 2) {
-      timeForamted = timeForamted + '0' + minutes + ':';
+      timeFormatted = timeFormatted + '0' + minutes + ':';
     } else {
-      timeForamted = timeForamted + minutes + ':';
+      timeFormatted = timeFormatted + minutes + ':';
     }
 
     if (seconds.length < 2) {
-      timeForamted = timeForamted + '0' + seconds;
+      timeFormatted = timeFormatted + '0' + seconds;
     } else {
-      timeForamted = timeForamted + seconds;
+      timeFormatted = timeFormatted + seconds;
     }
-    return timeForamted;
+    return timeFormatted;
+  };
+
+  const onStart = () => {
+    if (!Watcher) {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+      setWatcher(true);
+      timer.current = BackgroundTimer.setInterval(callBack, 1);
+    }
+  };
+
+  const onStop = () => {
+    if (Watcher) {
+      writeItemToStorage(getTimeFormated());
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+      setWatcher(false);
+      setTotalSeconds(0);
+      BackgroundTimer.clearInterval(timer.current);
+    }
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{flex: 1}}>
+      <View style={styles.MainContainer}>
         {!Watcher && (
           <View>
-            <Text style={{fontSize: 16, fontWeight: 'bold', margin: 15}}>
+            <Text style={styles.LastTimeTxt}>
               {'Last time spend in task: ' + LastSpentTime}
             </Text>
 
             <TextInput
-              style={{
-                width: width * 0.8,
-                height: 40,
-                alignSelf: 'center',
-                backgroundColor: '#F3F3F3',
-                color: '#000',
-                fontWeight: 'bold',
-                paddingHorizontal: 10,
-              }}
+              style={styles.TaskNameInput}
               placeholder="Enter Task Name"
             />
           </View>
         )}
 
-        <Text style={{fontSize: 16, fontWeight: 'bold', margin: 15}}>
+        <Text style={styles.TimerTxt}>
           Timer:{'  '}
           {getTimeFormated()}
         </Text>
 
-        <View style={{justifyContent: 'flex-end', flex: 1, marginBottom: 20}}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}>
-            <Pressable
-              onPress={() => {
-                if (!Watcher) {
-                  LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                  setWatcher(true);
-                  timer.current = BackgroundTimer.setInterval(callBack, 1);
-                }
-              }}
-              style={{
-                backgroundColor: '#18CC04',
-                width: width * 0.3,
-                height: 42,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginStart: 10,
-                marginEnd: 10,
-                borderRadius: 8,
-              }}>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: 'white',
-                  fontWeight: 'bold',
-                  letterSpacing: 1,
-                }}>
-                Start
-              </Text>
+        <View style={styles.ContianerStartStopBtns}>
+          <View style={styles.SubContainerBtns}>
+            <Pressable onPress={onStart} style={styles.StartBtn}>
+              <Text style={styles.StartBtnTxt}>Start</Text>
             </Pressable>
 
-            <Pressable
-              onPress={() => {
-                LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                setWatcher(false);
-                BackgroundTimer.clearInterval(timer.current);
-              }}
-              style={{
-                backgroundColor: '#FB3E29',
-                width: width * 0.3,
-                height: 42,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginStart: 10,
-                marginEnd: 10,
-                borderRadius: 8,
-              }}>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: 'white',
-                  fontWeight: 'bold',
-                  letterSpacing: 1,
-                }}>
-                Stop
-              </Text>
+            <Pressable onPress={onStop} style={styles.StopBtn}>
+              <Text style={styles.StopBtnTxt}>Stop</Text>
             </Pressable>
           </View>
         </View>
