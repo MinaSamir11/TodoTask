@@ -14,6 +14,7 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: 'bold',
     paddingHorizontal: 10,
+    marginTop: 10,
   },
   TimerTxt: {fontSize: 16, fontWeight: 'bold', margin: 15},
   ContianerStartStopBtns: {
