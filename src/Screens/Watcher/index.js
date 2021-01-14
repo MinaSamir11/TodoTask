@@ -9,7 +9,7 @@ import {
   UIManager,
   LayoutAnimation,
 } from 'react-native';
-import BackgroundTimer from '../../helper/BackgroundTimer';
+import BackgroundTimer from 'react-native-background-timer';
 import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 import styles from './styles';
 
@@ -22,8 +22,6 @@ if (
 }
 
 const WatcherTask = () => {
-  const timer = useRef();
-
   const [Watcher, setWatcher] = useState(false);
   const [TotalSeconds, setTotalSeconds] = useState(0);
   const [LastSpentTime, setLastSpentTime] = useState(0);
@@ -42,10 +40,6 @@ const WatcherTask = () => {
   useEffect(() => {
     readItemFromStorage();
   }, []);
-
-  const callBack = () => {
-    setTotalSeconds((prevState) => prevState + 1);
-  };
 
   const getTimeFormated = () => {
     let timeFormatted = '';
@@ -77,7 +71,10 @@ const WatcherTask = () => {
     if (!Watcher) {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       setWatcher(true);
-      timer.current = BackgroundTimer.setInterval(callBack, 1000);
+
+      BackgroundTimer.runBackgroundTimer(() => {
+        setTotalSeconds((prevState) => prevState + 1);
+      }, 1000);
     }
   };
 
@@ -87,7 +84,7 @@ const WatcherTask = () => {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       setWatcher(false);
       setTotalSeconds(0);
-      BackgroundTimer.clearInterval(timer.current);
+      BackgroundTimer.stopBackgroundTimer();
     }
   };
 
