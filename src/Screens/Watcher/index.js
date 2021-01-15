@@ -17,7 +17,7 @@ const WatcherTask = () => {
   const [Watcher, setWatcher] = useState(false);
   const [TotalSeconds, setTotalSeconds] = useState(0);
   const [LastSpentTime, setLastSpentTime] = useState(null);
-  const [value, onChangeText] = useState('');
+  const [valueTaskName, onChangeTaskName] = useState('');
   const {appState} = useAppState({
     onBackground: () => {
       BackgroundTimer.stopBackgroundTimer();
@@ -55,10 +55,15 @@ const WatcherTask = () => {
 
   useEffect(() => {
     const fetchAsyncStorage = async () => {
-      const values = await getMultiple(['@START_DATE', '@SPEND_TIME']);
+      const values = await getMultiple([
+        '@START_TIME',
+        '@SPEND_TIME',
+        '@TASK_NAME',
+      ]);
 
       if (values[0][1] !== null) {
         setWatcher(true);
+        onChangeTaskName(values[2][1]);
         resumeTimer();
       } else {
         setLastSpentTime(values[1][1]);
@@ -69,16 +74,15 @@ const WatcherTask = () => {
   }, []);
 
   const resumeTimer = async () => {
-    let keys = ['@START_DATE', '@TASK_NAME'];
+    let keys = ['@START_TIME'];
 
     const values = await getMultiple(keys);
-    const START_DATE = values[0][1];
+    const START_TIME = values[0][1];
 
-    if (START_DATE !== null) {
-      const millis = Date.now() - parseFloat(START_DATE);
+    if (START_TIME !== null) {
+      const millis = Date.now() - parseFloat(START_TIME);
       setTotalSeconds(Math.floor(millis / 1000));
       runTimerInBackground();
-      onChangeText(values[1][1]);
     }
   };
 
@@ -115,27 +119,28 @@ const WatcherTask = () => {
   };
 
   //using call back to prevent rerender to Button
-  const onStart = useCallback(() => {
+  const onStart = useCallback(async () => {
     if (!Watcher) {
-      const DATE_NOW = ['@START_DATE', Date.now().toString()];
-      const TASK_NAME = ['@TASK_NAME', value];
+      const DATE_NOW = ['@START_TIME', Date.now().toString()];
+      const TASK_NAME = ['@TASK_NAME', valueTaskName];
 
-      multiSet([DATE_NOW, TASK_NAME]);
+      await multiSet([DATE_NOW, TASK_NAME]);
 
       LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       setWatcher(true);
       runTimerInBackground();
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [Watcher]);
+  }, [Watcher, valueTaskName]);
 
   const onStop = useCallback(async () => {
     if (Watcher) {
-      setLastSpentTime(getTimeFormated());
+      BackgroundTimer.stopBackgroundTimer();
 
-      const rmKeys = ['@START_DATE', '@TASK_NAME'];
-      const lastSpendTime = ['@SPEND_TIME', getTimeFormated()];
+      const timeFormatted = getTimeFormated();
+      setLastSpentTime(timeFormatted);
+
+      const rmKeys = ['@START_TIME', '@TASK_NAME'];
+      const lastSpendTime = ['@SPEND_TIME', timeFormatted];
 
       await removeFew(rmKeys);
       await multiSet([lastSpendTime]);
@@ -143,8 +148,7 @@ const WatcherTask = () => {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       setWatcher(false);
       setTotalSeconds(0);
-      onChangeText('');
-      BackgroundTimer.stopBackgroundTimer();
+      onChangeTaskName('');
     }
   }, [Watcher, getTimeFormated]);
 
@@ -161,8 +165,8 @@ const WatcherTask = () => {
           style={styles.TaskNameInput}
           placeholder="Enter Task Name"
           editable={!Watcher}
-          value={value}
-          onChangeText={(text) => onChangeText(text)}
+          value={valueTaskName}
+          onChangeText={(text) => onChangeTaskName(text)}
         />
 
         <Text style={styles.TimerTxt}>
