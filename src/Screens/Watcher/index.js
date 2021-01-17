@@ -8,10 +8,10 @@ import {
   LayoutAnimation,
 } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './styles';
 import {Button} from '../../Components';
 import useAppState from './useAppState';
+import {removeFew, multiSet, getMultiple} from './asyncStorage';
 
 const WatcherTask = () => {
   const [Watcher, setWatcher] = useState(false);
@@ -26,32 +26,6 @@ const WatcherTask = () => {
       resumeTimer();
     },
   });
-
-  const getMultiple = async (keys) => {
-    let values;
-    try {
-      values = await AsyncStorage.multiGet(keys);
-      return values;
-    } catch (e) {
-      return Promise.reject(e);
-    }
-  };
-
-  const multiSet = async (newValues) => {
-    try {
-      await AsyncStorage.multiSet(newValues);
-    } catch (e) {
-      return Promise.reject(e);
-    }
-  };
-
-  const removeFew = async (keys) => {
-    try {
-      await AsyncStorage.multiRemove(keys);
-    } catch (e) {
-      return Promise.reject(e);
-    }
-  };
 
   useEffect(() => {
     const fetchAsyncStorage = async () => {
