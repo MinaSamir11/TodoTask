@@ -11,14 +11,23 @@ import BackgroundTimer from 'react-native-background-timer';
 import styles from './styles';
 import {Button} from '../../Components';
 import useAppState from './useAppState';
-import {removeFew, multiSet, getMultiple} from './asyncStorage';
+import {getMultiple} from './asyncStorage';
+import useTimer from './useTimer';
 
 const WatcherTask = () => {
   const [Watcher, setWatcher] = useState(false);
-  const [TotalSeconds, setTotalSeconds] = useState(0);
   const [LastSpentTime, setLastSpentTime] = useState(null);
   const [valueTaskName, onChangeTaskName] = useState('');
-  const {appState} = useAppState({
+  const {
+    runTimerInBackground,
+    resumeTimer,
+    setTotalSeconds,
+    getTimeFormated,
+    rmTimeTaskAddSpentTimeToAsync,
+    addTimeTaskToAsync,
+  } = useTimer();
+
+  const {} = useAppState({
     onBackground: () => {
       BackgroundTimer.stopBackgroundTimer();
     },
@@ -47,84 +56,33 @@ const WatcherTask = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const resumeTimer = async () => {
-    let keys = ['@START_TIME'];
-
-    const values = await getMultiple(keys);
-    const START_TIME = values[0][1];
-
-    if (START_TIME !== null) {
-      const millis = Date.now() - parseFloat(START_TIME);
-      setTotalSeconds(Math.floor(millis / 1000));
-      runTimerInBackground();
-    }
-  };
-
-  const getTimeFormated = useCallback(() => {
-    let timeFormatted = '';
-    let hours = Math.floor(TotalSeconds / 3600) + '';
-    let minutes = parseInt((TotalSeconds / 60) % 60) + '';
-    let seconds = (TotalSeconds % 60) + '';
-
-    if (hours.length < 2) {
-      timeFormatted = '0' + hours + ':';
-    } else {
-      timeFormatted = hours + ':';
-    }
-
-    if (minutes.length < 2) {
-      timeFormatted = timeFormatted + '0' + minutes + ':';
-    } else {
-      timeFormatted = timeFormatted + minutes + ':';
-    }
-
-    if (seconds.length < 2) {
-      timeFormatted = timeFormatted + '0' + seconds;
-    } else {
-      timeFormatted = timeFormatted + seconds;
-    }
-    return timeFormatted;
-  }, [TotalSeconds]);
-
-  const runTimerInBackground = () => {
-    BackgroundTimer.runBackgroundTimer(() => {
-      setTotalSeconds((prevState) => prevState + 1);
-    }, 1000);
-  };
-
   //using call back to prevent rerender to Button
-  const onStart = useCallback(async () => {
+  const onStart = useCallback(() => {
     if (!Watcher) {
-      const DATE_NOW = ['@START_TIME', Date.now().toString()];
-      const TASK_NAME = ['@TASK_NAME', valueTaskName];
-
-      await multiSet([DATE_NOW, TASK_NAME]);
-
+      addTimeTaskToAsync(valueTaskName);
       LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       setWatcher(true);
       runTimerInBackground();
     }
-  }, [Watcher, valueTaskName]);
+  }, [Watcher, valueTaskName, runTimerInBackground, addTimeTaskToAsync]);
 
-  const onStop = useCallback(async () => {
+  const onStop = useCallback(() => {
     if (Watcher) {
       BackgroundTimer.stopBackgroundTimer();
-
       const timeFormatted = getTimeFormated();
       setLastSpentTime(timeFormatted);
-
-      const rmKeys = ['@START_TIME', '@TASK_NAME'];
-      const lastSpendTime = ['@SPEND_TIME', timeFormatted];
-
-      await removeFew(rmKeys);
-      await multiSet([lastSpendTime]);
-
+      rmTimeTaskAddSpentTimeToAsync();
       LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       setWatcher(false);
       setTotalSeconds(0);
       onChangeTaskName('');
     }
-  }, [Watcher, getTimeFormated]);
+  }, [
+    Watcher,
+    getTimeFormated,
+    rmTimeTaskAddSpentTimeToAsync,
+    setTotalSeconds,
+  ]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
