@@ -22,13 +22,13 @@ export default function useTimer() {
     }, 1000);
   }, []);
 
-  const rmTimeTaskAddSpentTimeToAsync = useCallback(async () => {
+  const rmTimeTaskAddSpentTimeToAsync = async () => {
     const rmKeys = ['@START_TIME', '@TASK_NAME'];
     const timeFormatted = getTimeFormated();
     const lastSpentTime = ['@SPEND_TIME', timeFormatted];
     await removeFew(rmKeys);
     await multiSet([lastSpentTime]);
-  }, [getTimeFormated]);
+  };
 
   const getTimeFormated = useCallback(() => {
     let timeFormatted = '';
@@ -56,13 +56,14 @@ export default function useTimer() {
     return timeFormatted;
   }, [TotalSeconds]);
 
-  const addTimeTaskToAsync = useCallback(async (taskName) => {
-    const DATE_NOW = ['@START_TIME', Date.now().toString()];
+  const addTimeTaskToAsync = useCallback(async (timeNow, taskName) => {
+    const START_TIME = ['@START_TIME', timeNow.toString()];
     const TASK_NAME = ['@TASK_NAME', taskName];
-    await multiSet([DATE_NOW, TASK_NAME]);
+    await multiSet([START_TIME, TASK_NAME]);
   }, []);
 
   return {
+    TotalSeconds,
     setTotalSeconds,
     runTimerInBackground,
     resumeTimer,

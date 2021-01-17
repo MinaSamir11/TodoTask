@@ -59,7 +59,7 @@ const WatcherTask = () => {
   //using call back to prevent rerender to Button
   const onStart = useCallback(() => {
     if (!Watcher) {
-      addTimeTaskToAsync(valueTaskName);
+      addTimeTaskToAsync(Date.now(), valueTaskName);
       LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       setWatcher(true);
       runTimerInBackground();
