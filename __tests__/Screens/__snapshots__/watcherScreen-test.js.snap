@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`test Select Company screen should Renders WATCHER screen and MatchSnapShot 1`] = `
+exports[`test Watcher Screen should Renders WATCHER screen and MatchSnapShot 1`] = `
 <View
   accessible={true}
   focusable={true}
