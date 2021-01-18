@@ -14,7 +14,7 @@ describe('Timer Hook Behavoir', () => {
   const RealDate = Date.now;
 
   beforeAll(() => {
-    global.Date.now = jest.fn(() => new Date('2019-04-07T10:20:30Z').getTime());
+    global.Date.now = jest.fn(() => new Date('2020-04-07T10:20:30Z').getTime());
   });
 
   afterAll(() => {

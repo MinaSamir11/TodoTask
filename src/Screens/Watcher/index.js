@@ -85,7 +85,9 @@ const WatcherTask = () => {
   ]);
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback
+      onPress={Keyboard.dismiss}
+      testID={'WATCHER-SCREEN'}>
       <View style={styles.MainContainer}>
         {!Watcher && (
           <Text style={styles.LastTimeTxt}>
@@ -94,6 +96,7 @@ const WatcherTask = () => {
         )}
 
         <TextInput
+          testID={'INPUT-TASK_NAME'}
           style={styles.TaskNameInput}
           placeholder="Enter Task Name"
           editable={!Watcher}
@@ -109,6 +112,7 @@ const WatcherTask = () => {
         <View style={styles.ContianerStartStopBtns}>
           <View style={styles.SubContainerBtns}>
             <Button
+              testID={'START-BTN'}
               onPress={onStart}
               Title={'Start'}
               style={styles.StartBtn}
@@ -116,6 +120,7 @@ const WatcherTask = () => {
             />
 
             <Button
+              testID={'STOP-BTN'}
               onPress={onStop}
               Title={'Stop'}
               style={styles.StopBtn}

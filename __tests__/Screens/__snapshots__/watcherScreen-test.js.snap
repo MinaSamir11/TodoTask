@@ -1,0 +1,165 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test Select Company screen should Renders WATCHER screen and MatchSnapShot 1`] = `
+<View
+  accessible={true}
+  focusable={true}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "flex": 1,
+    }
+  }
+  testID="WATCHER-SCREEN"
+>
+  <Text
+    style={
+      Object {
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "margin": 15,
+      }
+    }
+  >
+    Last time spend in task: null
+  </Text>
+  <TextInput
+    allowFontScaling={true}
+    editable={true}
+    onChangeText={[Function]}
+    placeholder="Enter Task Name"
+    rejectResponderTermination={true}
+    style={
+      Object {
+        "alignSelf": "center",
+        "backgroundColor": "#F3F3F3",
+        "color": "#000",
+        "fontWeight": "bold",
+        "height": 40,
+        "marginTop": 10,
+        "paddingHorizontal": 10,
+        "width": 600,
+      }
+    }
+    testID="INPUT-TASK_NAME"
+    underlineColorAndroid="transparent"
+    value=""
+  />
+  <Text
+    style={
+      Object {
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "margin": 15,
+      }
+    }
+  >
+    Timer:
+      
+    00:00:00
+  </Text>
+  <View
+    style={
+      Object {
+        "flex": 1,
+        "justifyContent": "flex-end",
+        "marginBottom": 20,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "flexDirection": "row",
+          "justifyContent": "space-between",
+        }
+      }
+    >
+      <View
+        accessible={true}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "alignItems": "center",
+            "backgroundColor": "#18CC04",
+            "borderRadius": 8,
+            "height": 42,
+            "justifyContent": "center",
+            "marginEnd": 10,
+            "marginStart": 10,
+            "width": 225,
+          }
+        }
+        testID="START-BTN"
+      >
+        <Text
+          style={
+            Object {
+              "color": "white",
+              "fontSize": 14,
+              "fontWeight": "bold",
+              "letterSpacing": 1,
+            }
+          }
+        >
+          Start
+        </Text>
+      </View>
+      <View
+        accessible={true}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "alignItems": "center",
+            "backgroundColor": "#FB3E29",
+            "borderRadius": 8,
+            "height": 42,
+            "justifyContent": "center",
+            "marginEnd": 10,
+            "marginStart": 10,
+            "width": 225,
+          }
+        }
+        testID="STOP-BTN"
+      >
+        <Text
+          style={
+            Object {
+              "color": "white",
+              "fontSize": 14,
+              "fontWeight": "bold",
+              "letterSpacing": 1,
+            }
+          }
+        >
+          Stop
+        </Text>
+      </View>
+    </View>
+  </View>
+</View>
+`;
